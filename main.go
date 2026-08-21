@@ -117,7 +117,11 @@ func fetchRendered(ctx context.Context, pageURL *url.URL) (string, *url.URL, err
 		return "", nil, err
 	}
 
-	controlURL, err := launcher.New().Context(ctx).Bin(chromium).Headless(true).Launch()
+	browserLauncher := launcher.New().Context(ctx).Bin(chromium).Headless(true)
+	if os.Getenv("WAX_NO_SANDBOX") == "1" {
+		browserLauncher.NoSandbox(true)
+	}
+	controlURL, err := browserLauncher.Launch()
 	if err != nil {
 		return "", nil, err
 	}
