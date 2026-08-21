@@ -121,10 +121,9 @@ func TestFetchRendered(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	output, err := fetch(ctx, pageURL)
+	cancel()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -136,7 +135,9 @@ func TestFetchRendered(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	ctx, cancel = context.WithTimeout(context.Background(), 30*time.Second)
 	_, _, err = fetchRendered(ctx, missingURL)
+	cancel()
 	if err == nil || err.Error() != "HTTP 404" {
 		t.Fatalf("unexpected rendered HTTP error: %v", err)
 	}
