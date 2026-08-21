@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -102,6 +103,9 @@ func TestFetchStaticCharset(t *testing.T) {
 }
 
 func TestFetchRendered(t *testing.T) {
+	if os.Getenv("WAX_SKIP_BROWSER_TEST") == "1" {
+		t.Skip("browser test disabled")
+	}
 	if _, err := chromiumPath(); err != nil {
 		t.Skip(err)
 	}
