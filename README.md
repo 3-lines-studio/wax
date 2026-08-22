@@ -48,4 +48,13 @@ wax https://example.com
 
 Markdown goes to stdout. Errors go to stderr.
 
+Wax also implements the AX external tool protocol:
+
+```sh
+wax ax-tools
+printf '%s' '{"url":"https://example.com"}' | wax ax-run web_fetch
+```
+
+Use it through generic AX tool discovery with `AX_TOOLS="wax" ax`.
+
 On restricted CI runners where Chromium cannot create its sandbox, run Wax with `WAX_NO_SANDBOX=1`. Do not disable the sandbox when fetching untrusted pages unless the runner already isolates the process.

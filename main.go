@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -25,20 +26,36 @@ const maxMarkdown = 1 << 20
 const usefulTextLength = 500
 
 func main() {
+	if len(os.Args) == 2 && os.Args[1] == "ax-tools" {
+		fmt.Println(`{"name":"web_fetch","description":"Fetch a URL as Markdown with automatic Chromium rendering","parameters":{"type":"object","properties":{"url":{"type":"string","description":"HTTP or HTTPS URL"}},"required":["url"]},"snippet":"Fetch URL as Markdown with Wax"}`)
+		return
+	}
+	if len(os.Args) == 3 && os.Args[1] == "ax-run" && os.Args[2] == "web_fetch" {
+		var input struct {
+			URL string `json:"url"`
+		}
+		if err := json.NewDecoder(io.LimitReader(os.Stdin, 1<<20)).Decode(&input); err != nil {
+			fmt.Fprintf(os.Stderr, "error: invalid arguments: %v\n", err)
+			os.Exit(2)
+		}
+		run(input.URL)
+		return
+	}
 	if len(os.Args) != 2 {
 		fmt.Fprintln(os.Stderr, "usage: wax URL")
 		os.Exit(2)
 	}
+	run(os.Args[1])
+}
 
-	pageURL, err := url.ParseRequestURI(os.Args[1])
+func run(rawURL string) {
+	pageURL, err := url.ParseRequestURI(rawURL)
 	if err != nil || (pageURL.Scheme != "http" && pageURL.Scheme != "https") || pageURL.Host == "" {
 		fmt.Fprintln(os.Stderr, "error: URL must use http or https")
 		os.Exit(2)
 	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
-
 	output, err := fetch(ctx, pageURL)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
