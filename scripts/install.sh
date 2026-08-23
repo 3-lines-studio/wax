@@ -31,27 +31,44 @@ if [ "$os" = "darwin" ] && [ "$arch" != "aarch64" ]; then
     exit 1
 fi
 
-if ! command -v curl >/dev/null 2>&1; then
-    echo "install: curl is required" >&2
-    exit 1
-fi
+download() {
+    if command -v curl >/dev/null 2>&1; then
+        curl -fsSL "$1" -o "$2"
+    elif command -v wget >/dev/null 2>&1; then
+        wget -q "$1" -O "$2"
+    else
+        echo "install: curl or wget is required" >&2
+        return 1
+    fi
+}
 
 sha256() {
     if command -v sha256sum >/dev/null 2>&1; then
         sha256sum "$1" | awk '{print $1}'
-    else
+    elif command -v shasum >/dev/null 2>&1; then
         shasum -a 256 "$1" | awk '{print $1}'
+    elif command -v openssl >/dev/null 2>&1; then
+        openssl dgst -sha256 "$1" | awk '{print $NF}'
+    else
+        echo "install: sha256sum, shasum, or openssl is required" >&2
+        return 1
     fi
 }
 
 name="wax-$os-$arch"
 url="$base/$name"
-tmp="${TMPDIR:-/tmp}/wax-install-$$"
-trap 'rm -f "$tmp" "$tmp.sha256"' EXIT HUP INT TERM
+umask 077
+tmpdir="${TMPDIR:-/tmp}/wax-install-$$"
+if ! mkdir "$tmpdir"; then
+    echo "install: cannot create temporary directory: $tmpdir" >&2
+    exit 1
+fi
+tmp="$tmpdir/wax"
+trap 'rm -rf "$tmpdir"' 0 HUP INT TERM
 
 echo "downloading $name"
-curl -fsSL "$url" -o "$tmp" || { echo "install: download failed: $url" >&2; exit 1; }
-curl -fsSL "$url.sha256" -o "$tmp.sha256" || { echo "install: checksum fetch failed: $url.sha256" >&2; exit 1; }
+download "$url" "$tmp" || { echo "install: download failed: $url" >&2; exit 1; }
+download "$url.sha256" "$tmp.sha256" || { echo "install: checksum fetch failed: $url.sha256" >&2; exit 1; }
 
 want=$(awk '{print $1}' "$tmp.sha256")
 got=$(sha256 "$tmp")
@@ -61,7 +78,8 @@ if [ "$want" != "$got" ]; then
 fi
 
 mkdir -p "$bindir"
-install -m 0755 "$tmp" "$bindir/wax"
+cp "$tmp" "$bindir/wax"
+chmod 0755 "$bindir/wax"
 
 case ":$PATH:" in
     *":$bindir:"*) ;;
