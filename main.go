@@ -26,11 +26,15 @@ const maxMarkdown = 1 << 20
 const usefulTextLength = 500
 
 func main() {
-	if len(os.Args) == 2 && os.Args[1] == "ax-tools" {
+	args := os.Args[1:]
+	if len(args) > 0 && args[0] == "--" {
+		args = args[1:]
+	}
+	if len(args) == 1 && args[0] == "ax-tools" {
 		fmt.Println(`{"name":"web_fetch","description":"Fetch a URL as Markdown with automatic Chromium rendering","parameters":{"type":"object","properties":{"url":{"type":"string","description":"HTTP or HTTPS URL"}},"required":["url"]},"snippet":"Fetch URL as Markdown with Wax"}`)
 		return
 	}
-	if len(os.Args) == 3 && os.Args[1] == "ax-run" && os.Args[2] == "web_fetch" {
+	if len(args) == 2 && args[0] == "ax-run" && args[1] == "web_fetch" {
 		var input struct {
 			URL string `json:"url"`
 		}
@@ -41,11 +45,11 @@ func main() {
 		run(input.URL)
 		return
 	}
-	if len(os.Args) != 2 {
-		fmt.Fprintln(os.Stderr, "usage: wax URL")
+	if len(args) != 1 {
+		fmt.Fprintln(os.Stderr, "usage: wax [--] URL")
 		os.Exit(2)
 	}
-	run(os.Args[1])
+	run(args[0])
 }
 
 func run(rawURL string) {
