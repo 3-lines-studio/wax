@@ -194,10 +194,10 @@ func fetchRendered(ctx context.Context, pageURL *url.URL) (string, *url.URL, err
 
 func chromiumPath() (string, error) {
 	for _, name := range []string{
-		"chromium",
-		"chromium-browser",
 		"google-chrome",
 		"google-chrome-stable",
+		"chromium",
+		"chromium-browser",
 		"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
 		"/Applications/Chromium.app/Contents/MacOS/Chromium",
 	} {
