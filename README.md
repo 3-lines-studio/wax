@@ -51,8 +51,8 @@ Markdown goes to stdout. Errors go to stderr.
 Wax also implements the AX external tool protocol:
 
 ```sh
-wax ax-tools
-printf '%s' '{"url":"https://example.com"}' | wax ax-run web_fetch
+wax describe
+printf '%s' '{"url":"https://example.com"}' | wax run web_fetch
 ```
 
 Use it through generic AX tool discovery with `AX_TOOLS="wax" ax`.

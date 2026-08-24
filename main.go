@@ -30,11 +30,11 @@ func main() {
 	if len(args) > 0 && args[0] == "--" {
 		args = args[1:]
 	}
-	if len(args) == 1 && args[0] == "ax-tools" {
+	if len(args) == 1 && args[0] == "describe" {
 		fmt.Println(`{"name":"web_fetch","description":"Fetch a URL as Markdown with automatic Chromium rendering","parameters":{"type":"object","properties":{"url":{"type":"string","description":"HTTP or HTTPS URL"}},"required":["url"]},"snippet":"Fetch URL as Markdown with Wax"}`)
 		return
 	}
-	if len(args) == 2 && args[0] == "ax-run" && args[1] == "web_fetch" {
+	if len(args) == 2 && args[0] == "run" && args[1] == "web_fetch" {
 		var input struct {
 			URL string `json:"url"`
 		}
