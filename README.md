@@ -1,5 +1,7 @@
 # wax
 
+<p align="center"><img src=".github/ax.svg" width="96" height="96" alt="AX ecosystem"></p>
+
 Fetch a web page as Markdown for AX and other LLM tools.
 
 Wax uses HTTP first. When the page has little useful text, it renders the page with an installed Chromium browser and converts the final HTML to Markdown.
