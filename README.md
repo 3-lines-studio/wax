@@ -9,10 +9,10 @@ Wax uses HTTP first. When the page has little useful text, it renders the page w
 ## Install
 
 ```sh
-curl -fsSL https://github.com/3-lines-studio/wax/releases/latest/download/install.sh | sh
+curl -fsSL https://ax.3lines.studio/install.sh | sh -s -- wax
 ```
 
-This installs Wax to `~/.local/bin`. Override the location with `WAX_PREFIX` or pin a release with `WAX_VERSION=v0.1.0`.
+This installs Wax to `~/.local/bin`. Override the location with `AX_PREFIX` or pin a release with `VERSION=v0.1.0`.
 
 Prebuilt binaries support Linux on x86-64 and ARM64, and macOS on Apple silicon. Chromium, Chromium Browser, or Google Chrome is required only when a page needs rendering.
 
